@@ -1,20 +1,13 @@
 """
-MagicBricks Rental Scraper — v2
-===============================
-Same extraction logic as v1 (which worked correctly), with two upgrades:
-  1. MULTI-URL: loops over many base URLs (property-type x city) to get more rows.
-  2. SMARTER SCROLLING: incremental scroll steps + page-height detection to
-     coax the site into lazy-loading more cards than the old "jump to bottom" did.
+MagicBricks Rental Scraper 
+
+   MULTI-URL: loops over many base URLs (property-type x city) to get more rows.
+   SMARTER SCROLLING: incremental scroll steps + page-height detection to
+    coax the site into lazy-loading more cards.
 
 Still respectful (randomized delays), resilient (never crashes on a bad card),
 and incremental (saves to CSV as it goes). Only scrapes permitted results pages.
 
-Requirements:
-    pip install playwright pandas
-    playwright install chromium
-
-Usage:
-    python magicbricks_scraper_v2.py
 """
 
 import asyncio
@@ -24,14 +17,9 @@ import os
 from datetime import datetime
 from playwright.async_api import async_playwright
 
-# ---------------------------------------------------------------------------
-# CONFIG
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
 # URL GENERATION
 # We build MANY URLs by combining locality x BHK x property-type, because each
-# single URL caps at ~59 listings. Hundreds of URLs x ~59 = a large dataset.
+# single URL caps around ~59 listings. Hundreds of URLs x ~59 = a large dataset.
 #
 # URL patterns confirmed from the live site (all WITHOUT `proptype=`):
 #   flats-for-rent-in-{loc}-mumbai-pppfr
@@ -43,19 +31,17 @@ from playwright.async_api import async_playwright
 CITY = "mumbai"
 
 # Locality slugs (lowercase, hyphenated). Taken from the site's locality lists.
-# Add/remove freely — every locality you add multiplies your URL count.
+
 LOCALITIES = [
     "andheri-east", "andheri-west", "bandra-west", "bandra-east", "chembur",
     "mira-road", "powai", "goregaon-east", "goregaon-west", "worli",
     "malad-west", "borivali-west", "mulund-west", "chandivali", "kandivali-east",
     "thane-west", "vikhroli", "ghatkopar", "kanjurmarg", "dadar",
-    # --- add more localities here as you find them ---
 ]
 
 # BHK values to expand flats into (each is a separate URL slice).
 BHK_VALUES = [1, 2, 3, 4, 5]
 
-# Toggle which property categories to generate.
 INCLUDE_FLATS = True         # flats-for-rent + {n}-bhk-flats-for-rent per locality
 INCLUDE_HOUSES = True        # independent-house-for-rent per locality
 INCLUDE_VILLAS = True        # villa-for-rent per locality
@@ -93,11 +79,11 @@ def build_targets():
 
 TARGETS = build_targets()
 
-TARGET_ROWS_PER_URL = 500      # ceiling per URL; site caps ~59 anyway — this just means "take what it gives"
+TARGET_ROWS_PER_URL = 500  
 GLOBAL_ROW_TARGET = 6000       # stop the WHOLE run once we've collected this many NEW rows
 OUTPUT_CSV = os.path.join("data","magicbricks_rentals.csv")
 
-# Politeness — do not lower.
+# Politeness 
 MIN_DELAY = 2.5
 MAX_DELAY = 5.0
 HEADLESS = False               # keep False while watching it work
@@ -113,9 +99,8 @@ USER_AGENT = (
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
 
-# ---------------------------------------------------------------------------
-# FIELD EXTRACTION (unchanged from v1 — this worked)
-# ---------------------------------------------------------------------------
+
+# FIELD EXTRACTION
 
 async def safe_text(card, selector):
     try:
@@ -182,7 +167,6 @@ def parse_subtype(title):
     if not title:
         return None
     t = title.lower()
-    # Order matters: check more specific terms first.
     for kw in ["penthouse", "studio", "builder floor", "independent house",
                "villa", "apartment", "flat"]:
         if kw in t:
@@ -219,9 +203,8 @@ async def extract_card(card, property_type, city):
     }
 
 
-# ---------------------------------------------------------------------------
+
 # CSV
-# ---------------------------------------------------------------------------
 
 FIELDNAMES = [
     "property_type", "property_subtype", "city", "locality", "title", "price_raw", "price_per_sqft_raw",
@@ -262,9 +245,8 @@ def load_existing_keys():
     return keys
 
 
-# ---------------------------------------------------------------------------
+
 # SCRAPE ONE URL — improved incremental scrolling
-# ---------------------------------------------------------------------------
 
 def dedup_key(row):
     """
