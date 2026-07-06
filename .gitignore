@@ -1,0 +1,50 @@
+
+# Virtual Environment
+
+hpp/
+env/
+ENV/
+.venv/
+venv/
+.env
+
+# Python Cache
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+
+# VS Code
+
+.vscode/
+
+
+# Data (Scraped Dataset)
+
+data/
+
+
+# Trained Models
+
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.onnx
+
+
+# Logs
+
+*.log
+
+
+# OS Files
+
+.DS_Store
+Thumbs.db
