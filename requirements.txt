@@ -1,2 +1,7 @@
 playwright
 pandas
+ipykernel
+numpy
+seaborn
+matplotlib
+scikit-learn
