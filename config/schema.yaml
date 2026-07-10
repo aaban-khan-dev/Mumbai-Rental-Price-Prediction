@@ -1,0 +1,36 @@
+
+columns:
+  - property_type: str        
+  - property_subtype: str     
+  - city: str               
+  - locality: str             
+  - title: str                
+  - price_raw: str             
+  - price_per_sqft_raw: str    
+  - carpet_area_raw: str        
+  - floor_raw: str              
+  - status_raw: str          
+  - furnishing: str            
+  - facing: str                 
+  - overlooking: str          
+  - amenity_count: float       
+  - nearby_raw: str           
+  - description_raw: str        
+  - scraped_at: str             
+
+# Columns dropped during data cleaning (empty, redundant, constant, or metadata).
+drop_columns:
+  - property_subtype          
+  - city                      
+  - price_per_sqft_raw       
+  - amenity_count              
+  - description_raw             
+  - scraped_at                  
+
+# The raw column that becomes the prediction target after parsing.
+target_column:
+  - price_raw                   # parsed -> 'rent' (INR/month)
+
+outlier_columns:
+  - carpet_area_raw             # after parse -> carpet_area
+  - price_raw                   # after parse -> rent

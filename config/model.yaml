@@ -1,0 +1,104 @@
+
+model_selection:
+  model:
+
+    Linear Regression:
+      search_param_grid:
+        fit_intercept:
+          - True
+          - False
+
+    Ridge Regression:
+      search_param_grid:
+        alpha:
+          - 0.001
+          - 0.01
+          - 0.1
+          - 1
+          - 10
+          - 100
+          - 1000
+
+    Lasso Regression:
+      search_param_grid:
+        alpha:
+          - 0.001
+          - 0.01
+          - 0.1
+          - 1
+          - 10
+          - 100
+
+    Random Forest Regressor:
+      search_param_grid:
+        n_estimators:
+          - 100
+          - 200
+          - 300
+        max_depth:
+          - 10
+          - 20
+          - 30
+          - null            
+        min_samples_split:
+          - 2
+          - 5
+          - 10
+        min_samples_leaf:
+          - 1
+          - 2
+          - 4
+        max_features:
+          - "sqrt"
+          - "log2"
+          - 1.0             
+
+    XGBoost Regressor:
+      search_param_grid:
+        n_estimators:
+          - 200
+          - 400
+          - 600
+        max_depth:
+          - 4
+          - 6
+          - 8
+        learning_rate:
+          - 0.01
+          - 0.05
+          - 0.1
+        subsample:
+          - 0.8
+          - 1.0
+        colsample_bytree:
+          - 0.8
+          - 1.0
+        reg_lambda:          
+          - 5
+          - 10
+
+    LightGBM Regressor:
+      search_param_grid:
+        n_estimators:
+          - 200
+          - 400
+          - 600
+        num_leaves:
+          - 31
+          - 63
+          - 127
+        max_depth:
+          - 5
+          - 10
+          - -1              
+        learning_rate:
+          - 0.01
+          - 0.05
+          - 0.1
+        subsample:
+          - 0.8
+          - 1.0
+        reg_lambda:
+          - 0
+          - 1
+          - 5

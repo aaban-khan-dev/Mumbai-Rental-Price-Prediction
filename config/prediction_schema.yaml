@@ -1,0 +1,42 @@
+
+# --- Fields the user MUST provide ---
+required_columns:
+  - property_type: str     
+  - locality: str           
+  - furnishing: str        
+  - bhk: int               
+  - carpet_area: float      
+  - total_floors: int       
+
+# --- Optional preference toggles (UI switches). Default to 0 / 'Unknown' if unset. ---
+optional_columns:
+  - facing: str             # default 'Unknown'
+  - available_immediately: int   # default 1
+  - overlooks_garden: int        # default 0
+  - overlooks_pool: int          # default 0
+  - overlooks_main_road: int     # default 0
+  - near_school: int             # default 0
+  - near_hospital: int           # default 0
+  - near_mall: int               # default 0
+  - near_bus: int                # default 0
+  - near_railway: int            # default 0
+  - metro_mins: float            # default = 'far' value; 
+                                 
+
+# --- Features the pipeline DERIVES
+derived_columns:
+  - floor_ratio             # = floor_num / total_floors
+  - has_metro               # = 1 if metro_mins was provided/near, else 0
+
+# Defaults applied when an optional field is not supplied by the user.
+defaults:
+  facing: Unknown
+  available_immediately: 1
+  overlooks_garden: 0
+  overlooks_pool: 0
+  overlooks_main_road: 0
+  near_school: 0
+  near_hospital: 0
+  near_mall: 0
+  near_bus: 0
+  near_railway: 0
