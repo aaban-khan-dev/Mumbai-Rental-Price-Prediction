@@ -14,7 +14,7 @@ from src.constant import *
 from src.exception import RentException
 from src.logger import logging
 from src.utils.main_utils import MainUtils
-from src.model.estimator import RentModel   # changed: RentModel now lives in model/estimator.py
+from src.model.estimator import RentModel   
 
 from dataclasses import dataclass
 
@@ -142,8 +142,7 @@ class ModelTrainer:
             self.utils.save_object(
                 file_path=self.model_trainer_config.trained_model_path, obj=custom_model
             )
-
-            # changed: removed the redundant S3 folder-sync here.
+            
             # The trained model is now pushed to S3 by the training pipeline via
             # RentEstimator (start_model_pusher), so we only save locally here and
             # return the path.
