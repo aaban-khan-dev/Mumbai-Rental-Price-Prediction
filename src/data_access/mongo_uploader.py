@@ -49,15 +49,6 @@ class MongoUploader:
             records = df.to_dict(orient="records")
             self.collection.insert_many(records)
             logging.info(f"Uploaded {len(records)} records to '{self.collection_name}'")
-
-            # ---- OPTIONAL: re-upload when the CSV has NEW data ----
-            # If you re-scrape and want the DB refreshed automatically, enable this
-            # by comparing row counts instead of just empty/not-empty above:
-            #
-            # if existing_count != len(df):
-            #     logging.info("Row count changed -> refreshing collection with new data")
-            #     self.collection.delete_many({})
-            #     self.collection.insert_many(df.to_dict(orient="records"))
-
+            
         except Exception as e:
             raise RentException(e, sys) from e
