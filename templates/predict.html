@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predict a rent — Mumbai Rent Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="hero-bg">
+    <nav class="nav">
+      <div class="brand"><a href="{{ url_for('home') }}">Mumbai <span>Rent</span> Intelligence</a></div>
+      <div class="links">
+        <a href="{{ url_for('insights') }}">Market insights</a>
+      </div>
+    </nav>
+
+    <form class="form-wrap" method="POST" action="{{ url_for('predict') }}">
+      <div class="form-head">
+        <h2>Tell us about the flat</h2>
+        <p>Fill in the details below. Optional preferences refine the estimate.</p>
+      </div>
+
+      <div class="form-body">
+        <div class="field-grid">
+          <div class="field">
+            <label>Locality</label>
+            <select name="locality" required>
+              {% for loc in localities %}<option value="{{ loc }}">{{ loc.replace('-', ' ')|title }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label>Property type</label>
+            <select name="property_type">
+              {% for pt in property_types %}<option value="{{ pt }}">{{ pt|title }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label>Bedrooms (BHK)</label>
+            <input type="number" name="bhk" min="1" max="6" value="2" required>
+          </div>
+          <div class="field">
+            <label>Carpet area (sqft)</label>
+            <input type="number" name="carpet_area" min="100" max="5000" value="800" required>
+          </div>
+          <div class="field">
+            <label>Furnishing</label>
+            <select name="furnishing">
+              {% for f in furnishing %}<option value="{{ f }}">{{ f }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label>Facing</label>
+            <select name="facing">
+              {% for f in facing %}<option value="{{ f }}">{{ f }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label>Floor number</label>
+            <input type="number" name="floor_num" min="0" max="60" value="3">
+          </div>
+          <div class="field">
+            <label>Total floors in building</label>
+            <input type="number" name="total_floors" min="1" max="60" value="10">
+          </div>
+          <div class="field full">
+            <label>Asking rent (optional — to check if it's fairly priced)</label>
+            <input type="number" name="asking_rent" min="0" placeholder="e.g. 55000">
+          </div>
+        </div>
+
+        <div class="toggle-section">
+          <h3>Preferences &amp; nearby (optional)</h3>
+          <div class="toggle-grid">
+            <label class="toggle"><input type="checkbox" name="near_metro"> Near a metro</label>
+            <label class="toggle"><input type="checkbox" name="near_school"> Near a school</label>
+            <label class="toggle"><input type="checkbox" name="near_hospital"> Near a hospital</label>
+            <label class="toggle"><input type="checkbox" name="near_mall"> Near a mall</label>
+            <label class="toggle"><input type="checkbox" name="near_bus"> Near a bus stop</label>
+            <label class="toggle"><input type="checkbox" name="near_railway"> Near a railway</label>
+            <label class="toggle"><input type="checkbox" name="overlooks_garden"> Garden view</label>
+            <label class="toggle"><input type="checkbox" name="overlooks_pool"> Pool view</label>
+            <label class="toggle"><input type="checkbox" name="overlooks_main_road"> Main-road view</label>
+            <label class="toggle"><input type="checkbox" name="available_immediately" checked> Available now</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-gold">Predict rent</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

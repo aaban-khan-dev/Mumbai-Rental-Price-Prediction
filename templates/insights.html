@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market insights — Mumbai Rent Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="nav" style="background: var(--navy-900);">
+    <div class="brand"><a href="{{ url_for('home') }}">Mumbai <span>Rent</span> Intelligence</a></div>
+    <div class="links">
+      <a href="{{ url_for('predict') }}">Predict a rent</a>
+    </div>
+  </nav>
+
+  <div class="insights-wrap">
+    <h1>The Mumbai rental market map</h1>
+    <p class="lede">
+      Median price per square foot across localities, from our dataset of live listings.
+      This is where location premium shows up most clearly.
+    </p>
+
+    {% if market.localities %}
+      {% set maxval = market.localities|map(attribute='ppsf')|max %}
+      {% for loc in market.localities %}
+      <div class="loc-bar-row">
+        <div class="loc-name">{{ loc.name.replace('-', ' ')|title }}</div>
+        <div class="loc-track">
+          <div class="loc-fill" style="width: {{ (loc.ppsf / maxval * 100)|round(1) }}%;"></div>
+        </div>
+        <div class="loc-val">₹{{ "{:,.0f}".format(loc.ppsf) }}/sqft</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color: var(--muted);">Market insights data is being prepared. Run the insights export to populate this view.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

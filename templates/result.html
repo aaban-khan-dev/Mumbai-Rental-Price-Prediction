@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your rent estimate — Mumbai Rent Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="nav" style="background: var(--navy-900);">
+    <div class="brand"><a href="{{ url_for('home') }}">Mumbai <span>Rent</span> Intelligence</a></div>
+    <div class="links">
+      <a href="{{ url_for('predict') }}">New estimate</a>
+      <a href="{{ url_for('insights') }}">Market insights</a>
+    </div>
+  </nav>
+
+  <div class="result-wrap">
+    <!-- headline predicted rent + range -->
+    <div class="result-hero">
+      <div class="label">Estimated fair rent</div>
+      <div class="rent">₹{{ "{:,.0f}".format(rent) }}</div>
+      <div class="range">Likely range: ₹{{ "{:,.0f}".format(low) }} – ₹{{ "{:,.0f}".format(high) }} / month</div>
+    </div>
+
+    <!-- fair-price meter (only if the user entered an asking rent) -->
+    {% if fair_price %}
+    <div class="panel">
+      <h3>Is the asking price fair?</h3>
+      <p class="panel-sub">Comparing the listed rent of ₹{{ "{:,.0f}".format(fair_price.asking) }} to our estimate.</p>
+      <div class="fair-meter">
+        <span class="fair-badge {{ fair_price.verdict }}">
+          {% if fair_price.verdict == 'overpriced' %}{{ fair_price.diff_pct }}% above fair price
+          {% elif fair_price.verdict == 'underpriced' %}{{ fair_price.diff_pct|abs }}% below fair price — good deal
+          {% else %}Fairly priced{% endif %}
+        </span>
+        <div class="fair-detail">
+          {% if fair_price.verdict == 'overpriced' %}This listing costs more than comparable flats.
+          {% elif fair_price.verdict == 'underpriced' %}This listing is cheaper than comparable flats.
+          {% else %}This listing is in line with the market.{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- why this price: SHAP breakdown -->
+    <div class="panel">
+      <h3>Why this price</h3>
+      <p class="panel-sub">How each feature pushes the rent up (green) or down (red), vs a typical Mumbai flat.</p>
+      {% set maxabs = breakdown.contributions|map(attribute='impact')|map('abs')|max %}
+      {% for c in breakdown.contributions %}
+      <div class="shap-row">
+        <div class="shap-name">{{ c.feature }}</div>
+        <div class="shap-bar-track">
+          <div class="shap-mid"></div>
+          {% set width = (c.impact|abs / maxabs * 48) if maxabs else 0 %}
+          {% if c.impact >= 0 %}
+          <div class="shap-bar pos" style="{{ 'width: {}%;'.format(width) }}"></div>
+          {% else %}
+          <div class="shap-bar neg" style="{{ 'width: {}%;'.format(width) }}"></div>
+          {% endif %}
+        </div>
+        <div class="shap-val {{ 'pos' if c.impact >= 0 else 'neg' }}">
+          {{ '+' if c.impact >= 0 else '&minus;' }}₹{{ "{:,.0f}".format(c.impact|abs) }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- what-if explorer -->
+    <div class="panel">
+      <h3>What if you changed something?</h3>
+      <p class="panel-sub">Adjust the options to see how the rent would change.</p>
+      <div class="whatif-grid">
+        <div class="whatif-control">
+          <label>Bedrooms (BHK): <span id="bhkLabel"></span></label>
+          <input type="range" id="wf_bhk" min="1" max="5" step="1">
+        </div>
+        <div class="whatif-control">
+          <label>Furnishing</label>
+          <select id="wf_furnishing">
+            <option value="Unfurnished">Unfurnished</option>
+            <option value="Semi-Furnished">Semi-Furnished</option>
+            <option value="Furnished">Furnished</option>
+          </select>
+        </div>
+        <div class="whatif-control">
+          <label>Carpet area (sqft): <span id="areaLabel"></span></label>
+          <input type="range" id="wf_area" min="200" max="3000" step="50">
+        </div>
+        <div class="whatif-control">
+          <label>Metro nearby</label>
+          <select id="wf_metro">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+      </div>
+      <div class="whatif-result">
+        <div class="new-rent" id="wf_rent">₹{{ "{:,.0f}".format(rent) }}</div>
+        <div class="delta" id="wf_delta">Adjust the sliders above</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- pass server data to JS safely -->
+  <script>
+    window.BASE_INPUT = {{ user_input|tojson }};
+    window.BASE_RENT = {{ rent|tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/whatif.js') }}"></script>
+</body>
+</html>
