@@ -56,11 +56,11 @@ class TrainingPipeline:
         except Exception as e:
             raise RentException(e, sys) from e
 
-    # ---------------- NEW: push the trained model to the S3 bucket --------------- #
+    #  push the trained model to the S3 bucket 
     def start_model_pusher(self, trained_model_path):
         try:
             logging.info("Pushing trained model to S3 bucket")
-            model_file_name = MODEL_FILE_NAME + MODEL_FILE_EXTENSION   # e.g. 'model.pkl'
+            model_file_name = MODEL_FILE_NAME + MODEL_FILE_EXTENSION   
             rent_estimator = RentEstimator(
                 bucket_name=AWS_S3_BUCKET_NAME,
                 model_name=model_file_name,
@@ -72,7 +72,7 @@ class TrainingPipeline:
 
     def run_pipeline(self):
         try:
-            # NEW: ensure data is in MongoDB before ingestion
+            # ensure data is in MongoDB before ingestion
             self.start_data_upload()
 
             raw_data_dir = self.start_data_ingestion()
