@@ -56,7 +56,7 @@ class PredictionPipeline:
         Returns a single-row DataFrame in the structure the preprocessor expects.
         """
         try:
-            data = dict(user_input)  # copy so we don't mutate the caller's dict
+            data = dict(user_input)  
 
             #  fill defaults for optional fields not supplied by the user 
             defaults = self.prediction_schema.get("defaults", {})
