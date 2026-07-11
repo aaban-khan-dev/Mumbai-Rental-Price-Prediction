@@ -14,6 +14,10 @@ from src.logger import logging
 from src.pipeline.prediction_pipeline import PredictionPipeline
 from src.model.shap_explainer import ShapExplainer
 
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+
+
 app = Flask(__name__)
 
 # One prediction pipeline for the whole app (model is cached inside it after first load)

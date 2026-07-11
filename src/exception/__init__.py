@@ -2,6 +2,8 @@ import os
 
 def error_message_detail(error,error_detail):
     _,_,exc_tb = error_detail.exc_info()
+    if exc_tb is None:
+        return str(error)
     file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
     line_number = exc_tb.tb_lineno
     return f"Error occurred in python script name [{file_name}] line number [{line_number}] error message [{str(error)}]"

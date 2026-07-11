@@ -11,6 +11,9 @@ from src.constant import *
 from src.exception import RentException
 from src.logger import logging
 
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+
 
 class TrainingPipeline:
 
