@@ -14,7 +14,7 @@ from src.constant import *
 from src.exception import RentException
 from src.logger import logging
 from src.utils.main_utils import MainUtils
-from src.cloud_storage.aws_syncer import S3Sync
+from src.model.estimator import RentModel   # changed: RentModel now lives in model/estimator.py
 
 from dataclasses import dataclass
 
@@ -27,36 +27,12 @@ class ModelTrainerConfig:
     model_config_file_path = os.path.join("config", "model.yaml")
 
 
-class RentModel:
-    """Wraps the preprocessor + trained model so prediction is one call."""
-
-    def __init__(self, preprocessing_object: object, trainer_model_object: object):
-        self.preprocessing_object = preprocessing_object
-        self.trainer_model_object = trainer_model_object
-
-    def predict(self, X: pd.DataFrame):
-        logging.info("Entered the predict method of RentModel class")
-        try:
-            transformed_features = self.preprocessing_object.transform(X)
-            preds_log = self.trainer_model_object.predict(transformed_features)
-            # model was trained on log(rent) -> invert back to rupees
-            return np.expm1(preds_log)
-        except Exception as e:
-            raise RentException(e, sys) from e
-
-    def __repr__(self):
-        return f"{type(self.trainer_model_object).__name__}()"
-
-    def __str__(self):
-        return f"{type(self.trainer_model_object).__name__}()"
-
 
 class ModelTrainer:
 
     def __init__(self):
         self.model_trainer_config = ModelTrainerConfig()
         self.utils = MainUtils()
-        self.s3_sync = S3Sync()
 
     def evaluate_models(self, X_train, y_train, X_test, y_test, models):
         try:
@@ -167,15 +143,11 @@ class ModelTrainer:
                 file_path=self.model_trainer_config.trained_model_path, obj=custom_model
             )
 
-            try:
-                self.s3_sync.sync_folder_to_S3(
-                    folder=os.path.dirname(self.model_trainer_config.trained_model_path),
-                    aws_bucket_name=AWS_S3_BUCKET_NAME,
-                )
-            except Exception as e:
-                logging.info(f"Failed to sync model to S3: {e}")
-
-            return final_score
+            # changed: removed the redundant S3 folder-sync here.
+            # The trained model is now pushed to S3 by the training pipeline via
+            # RentEstimator (start_model_pusher), so we only save locally here and
+            # return the path.
+            return final_score, self.model_trainer_config.trained_model_path
 
         except Exception as e:
             raise RentException(e, sys)
