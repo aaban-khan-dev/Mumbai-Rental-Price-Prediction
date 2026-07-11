@@ -1,8 +1,10 @@
 // What-if explorer: adjust inputs, re-run prediction via /whatif, show the delta.
 
 (function () {
-  const base = window.BASE_INPUT;
-  const baseRent = window.BASE_RENT;
+  // read the server data from the JSON script block
+  const pageData = JSON.parse(document.getElementById("page-data").textContent);
+  const base = pageData.base_input;
+  const baseRent = pageData.base_rent;
 
   const bhk = document.getElementById("wf_bhk");
   const furnishing = document.getElementById("wf_furnishing");

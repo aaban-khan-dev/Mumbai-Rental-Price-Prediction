@@ -57,13 +57,13 @@
           <div class="shap-mid"></div>
           {% set width = (c.impact|abs / maxabs * 48) if maxabs else 0 %}
           {% if c.impact >= 0 %}
-          <div class="shap-bar pos" style="{{ 'width: {}%;'.format(width) }}"></div>
+          <div class="shap-bar pos" style="width: {{ width }}%;"></div>
           {% else %}
-          <div class="shap-bar neg" style="{{ 'width: {}%;'.format(width) }}"></div>
+          <div class="shap-bar neg" style="width: {{ width }}%;"></div>
           {% endif %}
         </div>
         <div class="shap-val {{ 'pos' if c.impact >= 0 else 'neg' }}">
-          {{ '+' if c.impact >= 0 else '&minus;' }}₹{{ "{:,.0f}".format(c.impact|abs) }}
+          {{ '+' if c.impact >= 0 else '−' }}₹{{ "{:,.0f}".format(c.impact|abs) }}
         </div>
       </div>
       {% endfor %}
@@ -105,10 +105,9 @@
     </div>
   </div>
 
-  <!-- pass server data to JS safely -->
-  <script>
-    window.BASE_INPUT = {{ user_input|tojson }};
-    window.BASE_RENT = {{ rent|tojson }};
+  <!-- pass server data to JS via a JSON block (no inline JS = no linter false-positives) -->
+  <script id="page-data" type="application/json">
+    {{ {"base_input": user_input_obj, "base_rent": rent}|tojson }}
   </script>
   <script src="{{ url_for('static', filename='js/whatif.js') }}"></script>
 </body>
