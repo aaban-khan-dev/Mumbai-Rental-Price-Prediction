@@ -1,4 +1,4 @@
-# 🏙️ Mumbai Rent Intelligence
+#🏙️ Mumbai Rent Intelligence
 
 An end-to-end machine learning system that constructs a dataset from live Mumbai rental listings, models the fair market rent of a given flat, explains the drivers behind each prediction, and supports interactive trade-off analysis. The system is served through a production-oriented MLOps pipeline spanning data acquisition, validation, model development, deployment, and explainable inference.
 
