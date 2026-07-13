@@ -103,20 +103,52 @@ Together, these procedures reduce the risk of leakage and optimistic evaluation,
 
 ---
 
-## 🏗️ Architecture
+```mermaid
+flowchart TB
 
-```
-┌──────────────┐   ┌───────────┐   ┌────────────┐   ┌──────────────┐   ┌───────────┐
-│  Playwright  │──▶│  MongoDB  │──▶│ Validation │──▶│Transformation│──▶│  Trainer  │
-│   Scraper    │   │  (Atlas)  │   │ (schema +  │   │ (clean, FE,  │   │ 6 models  │
-│ ~160 URLs    │   │           │   │ type/null) │   │ encode,split)│   │ + tuning  │
-└──────────────┘   └───────────┘   └────────────┘   └──────────────┘   └─────┬─────┘
-                                                                             │
-┌──────────────┐   ┌───────────────┐   ┌─────────────┐   ┌──────────────┐    │
-│  Flask UI    │◀──│  Prediction   │◀──│  AWS S3     │◀──│ RentEstimator│◀───┘
-│ SHAP+What-if │   │  Pipeline     │   │ model.pkl   │   │ (push model) │
-└──────────────┘   │ (cached load) │   └─────────────┘   └──────────────┘
-                   └───────────────┘
+%% ---------------- DATA COLLECTION ---------------- %%
+subgraph DC["Data Collection"]
+direction LR
+A[Playwright Scraper]
+B[(MongoDB Atlas)]
+A --> B
+end
+
+%% ---------------- TRAINING ---------------- %%
+subgraph TP["Training Pipeline"]
+direction LR
+C[Data Ingestion]
+D[Data Validation]
+E[Data Transformation]
+
+C --> D
+D --> E
+end
+
+subgraph MT["Model Training"]
+direction LR
+F[Model Trainer]
+G[RentEstimator]
+F --> G
+end
+
+B --> C
+E --> F
+
+%% ---------------- STORAGE ---------------- %%
+H[(AWS S3)]
+G --> H
+
+%% ---------------- SERVING ---------------- %%
+subgraph SV["Serving"]
+direction LR
+I[Prediction Pipeline]
+J["Flask UI<br/>Prediction<br/>SHAP<br/>What-if Analysis"]
+
+I --> J
+end
+
+H --> I
 ```
 
 The training pipeline and the web application communicate only through S3: training writes the model, and the application reads it. The two components run independently.
