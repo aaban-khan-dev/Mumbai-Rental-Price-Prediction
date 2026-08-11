@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Secrets 
+.env
+*.env
+
+# Local model artifacts (pulled fresh from S3 at runtime)
+artifacts/
+model.pkl
+*.pkl
+
+# Notebooks, data, scraping 
+notebooks/
+scraper/
+data/
+*.csv
+
+# Dev tooling
+.git/
+.gitignore
+.vscode/
+.idea/
+venv/
+env/
+*.log
+
+# Docs
+*.md
+
+# Virtual environment
+hpp/
+
+# Extra training artifacts
+artifact_folder/
